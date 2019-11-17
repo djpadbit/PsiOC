@@ -1,0 +1,90 @@
+buildscript {
+	repositories {
+		jcenter()
+		maven { url = "http://files.minecraftforge.net/maven" }
+		maven { url = 'http://repo.spongepowered.org/maven' }
+	}
+	dependencies {
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+		classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+	}
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+
+version = mc_version
+group = "com.djpadbit."+mod_id
+archivesBaseName = "PsiOC"
+
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+compileJava {
+	sourceCompatibility = targetCompatibility = '1.8'
+}
+
+repositories {
+	mavenCentral()
+	maven { url = "https://maven.blamejared.com/" }			// Psi
+	maven { url = "http://maven.cil.li/" }					// OC
+	maven { url = 'http://repo.spongepowered.org/maven' }	// Mixin
+}
+
+configurations {
+	embed
+	implementation.extendsFrom(embed)
+}
+
+sourceSets {
+	main {
+		ext.refMap = "mixins.psioc.refmap.json"
+	}
+}
+
+dependencies {
+	compile "vazkii.autoreglib:AutoRegLib:${project.arl_version}"
+	deobfCompile "vazkii.psi:Psi:${project.psi_version}"
+	deobfCompile "li.cil.oc:OpenComputers:MC${project.mc_version}-${project.opencomputers_version}"
+	embed("org.spongepowered:mixin:${project.mixin_version}") { transitive = false }
+	embed files("libs/PsiOC-1.12.2.jar") // scala part of the mod
+}
+
+jar {
+	from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
+		exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
+	}
+	
+	manifest.attributes(
+		//'FMLCorePlugin': 'com.djpadbit.psioc.mixins.MixinLoadingPlugin',
+		'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+		'TweakOrder': 0,
+		'MixinConfigs': 'mixins.psioc.json',
+		'FMLCorePluginContainsFMLMod': 'true',
+		'ForceLoadAsMod': 'true'
+	)
+}
+
+minecraft {
+	version = "${project.mc_version}-${project.forge_version}"
+	runDir = "run"
+
+	mappings = project.mappings_version
+}
+
+processResources {
+	// this will ensure that this task is redone when the versions change.
+	inputs.property "version", project.version
+	inputs.property "mcversion", project.minecraft.version
+
+	// replace stuff in mcmod.info, nothing else
+	from(sourceSets.main.resources.srcDirs) {
+		include 'mcmod.info'
+				
+		// replace version and mcversion
+		expand 'version':project.version, 'mcversion':project.minecraft.version
+	}
+		
+	// copy everything else except the mcmod.info
+	from(sourceSets.main.resources.srcDirs) {
+		exclude 'mcmod.info'
+	}
+}

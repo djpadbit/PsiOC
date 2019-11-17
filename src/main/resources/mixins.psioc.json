@@ -1,0 +1,10 @@
+{
+	"package": "com.djpadbit.psioc.mixins",
+	"refmap": "mixins.psioc.refmap.json",
+	"target": "@env(INIT)",
+	"minVersion": "0.6",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"MixinLoader"
+	]
+}
