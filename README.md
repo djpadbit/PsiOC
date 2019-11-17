@@ -1,6 +1,6 @@
 # PsiOC
 ### Don't expect it to be maintained
-A Minecraft that allows users to write PSI spell in lua using OpenComputers
+A Minecraft mod that allows users to write PSI spell in lua using OpenComputers
 
 I'm just dumping the code here, it's not really meant to be used. I just wrote it because i wanted to see if i could and it's not entirely done.
 Most of it works, but it doesn't consume PSI, though i haven't fully tested it.
