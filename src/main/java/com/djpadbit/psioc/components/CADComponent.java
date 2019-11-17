@@ -111,6 +111,7 @@ public class CADComponent extends AbstractManagedEnvironment implements DeviceIn
 			methodMap.put(method,sd);
 		}
 		methods[index] = "print";
+		methodMap.put("print",new SpellPieceData("print",false));
 	}
 
 	public static boolean hasMethod(String name) {
